@@ -18,11 +18,12 @@ import org.ntqqrev.acidify.getFriend
 import org.ntqqrev.acidify.getGroup
 import org.ntqqrev.acidify.logging.LogHandler
 import org.ntqqrev.acidify.logging.LogLevel
-import org.ntqqrev.acidify.logging.shortenPackageName
 import org.ntqqrev.acidify.message.MessageScene
 import org.ntqqrev.yogurt.YogurtApp
 import kotlin.time.Clock
 import kotlin.time.Instant
+
+private const val TAG_COLUMN_WIDTH = 16
 
 val timeFormat = LocalDateTime.Format {
     hour()
@@ -30,6 +31,47 @@ val timeFormat = LocalDateTime.Format {
     minute()
     char(':')
     second()
+}
+
+private val tagAliasMap = mapOf(
+    "org.ntqqrev.acidify.Bot" to "Rizify/Bot",
+    "org.ntqqrev.acidify.AndroidBot" to "Rizify/Android",
+    "org.ntqqrev.acidify.internal.context.PacketContext" to "Rizify/Packet",
+    "org.ntqqrev.acidify.internal.context.HighwayContext" to "Rizify/Highway",
+    "org.ntqqrev.acidify.internal.context.FlashTransferContext" to "Rizify/Transfer",
+    "org.ntqqrev.acidify.internal.context.TicketContext" to "Rizify/Ticket",
+    "org.ntqqrev.acidify.internal.LagrangeClient" to "Rizify/Client",
+    "org.ntqqrev.acidify.internal.KuromeClient" to "Rizify/Client",
+    "org.ntqqrev.acidify.entity.internal.BotEntityCache" to "Rizify/Cache",
+    "org.ntqqrev.acidify.message.internal.MessageBuildingContext" to "Rizify/Message",
+    "org.ntqqrev.acidify.milky.MilkyContext" to "Milky/Core",
+    "HttpModule" to "Milky/Http",
+    "WebSocketModule" to "Milky/WS",
+    "WebhookModule" to "Milky/Webhook",
+    "SseModule" to "Milky/SSE",
+    "ApiAuthPlugin" to "Milky/ApiAuth",
+    "EventAuthPlugin" to "Milky/EventAuth",
+    "MessageTransform" to "Milky/Transform",
+    "io.ktor.server.Application" to "Milky/Server",
+    "Logging" to "Rizify/Event",
+    "SessionStoreUtils" to "Rizify/Session",
+    "SessionRenewal" to "Rizify/Renewal",
+    "ScriptLoader" to "Rizify/Script",
+    "Scripting" to "Rizify/Script",
+)
+
+fun formatRizifyLogTag(tag: String): String {
+    tagAliasMap[tag]?.let { return it }
+    return when {
+        tag.startsWith("Rizify.") -> "Rizify/${tag.removePrefix("Rizify.")}"
+        tag.startsWith("Rizify/") -> tag
+        tag.startsWith("org.ntqqrev.acidify.milky.") -> "Milky/${tag.substringAfterLast('.')}"
+        tag.startsWith("org.ntqqrev.acidify.") -> "Rizify/${tag.substringAfterLast('.')}"
+        tag.startsWith("org.ntqqrev.yogurt.") -> "Rizify/${tag.substringAfterLast('.')}"
+        tag.startsWith("io.ktor.") -> "Ktor/${tag.substringAfterLast('.')}"
+        '.' in tag -> tag.substringAfterLast('.')
+        else -> tag
+    }
 }
 
 fun formatColoredLog(
@@ -41,30 +83,33 @@ fun formatColoredLog(
     val b = StringBuilder()
     val now: Instant = Clock.System.now()
     val localNow: LocalDateTime = now.toLocalDateTime(TimeZone.currentSystemDefault())
+    val formattedTag = formatRizifyLogTag(tag).padEnd(TAG_COLUMN_WIDTH)
     b.append(bold(green(timeFormat.format(localNow))))
     b.append(" ")
     b.append(
         when (level) {
             LogLevel.VERBOSE -> gray("TRACE")
-            LogLevel.DEBUG -> brightBlue("DEBUG")
-            LogLevel.INFO -> green(" INFO")
+            LogLevel.DEBUG -> brightCyan("DEBUG")
+            LogLevel.INFO -> brightGreen(" INFO")
             LogLevel.WARN -> brightYellow(" WARN")
             LogLevel.ERROR -> brightRed("ERROR")
         }
     )
-    b.append(" ")
+    b.append(gray(" │ "))
     b.append(
         when (level) {
             LogLevel.VERBOSE -> gray
             LogLevel.ERROR -> brightRed
-            else -> cyan
-        }(shortenPackageName(tag))
+            LogLevel.WARN -> brightYellow
+            else -> brightWhite
+        }(formattedTag)
     )
-    b.append(" ")
+    b.append(gray(" │ "))
     b.append(
         when (level) {
             LogLevel.VERBOSE -> gray(message)
             LogLevel.ERROR -> brightRed(message)
+            LogLevel.WARN -> yellow(message)
             else -> message
         }
     )
@@ -82,6 +127,8 @@ fun formatColoredLog(
 }
 
 expect val YogurtApp.logHandler: LogHandler
+
+expect fun YogurtApp.createKtorLogger(name: String): io.ktor.util.logging.Logger
 
 private val BotFriend.displayName
     get() = remark.ifBlank { nickname }
@@ -171,7 +218,7 @@ fun Application.configureEventLogging() = launch {
             }
 
             is BotOfflineEvent -> {
-                logger.e { "Bot 已离线，原因：${it.reason}" }
+                logger.e { "流转会话已离线，原因：${it.reason}" }
             }
 
             is FriendNudgeEvent -> {

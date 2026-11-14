@@ -148,8 +148,7 @@ async function run(options: CliOptions): Promise<void> {
     )
   }
 
-  console.error(`Rizify 数据目录: ${dataDirectory}`)
-  console.error(`Rizify 配置: ${yogurtConfigPath}`)
+  console.error(`[Rizify/CLI] 数据目录: ${dataDirectory} | 配置: ${yogurtConfigPath}`)
 
   const child = spawn(binary, [], {
     cwd: dataDirectory,

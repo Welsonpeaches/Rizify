@@ -6,7 +6,6 @@ import ch.qos.logback.core.AppenderBase
 import io.ktor.util.logging.*
 import org.ntqqrev.acidify.logging.LogHandler
 import org.ntqqrev.acidify.logging.LogLevel
-import org.ntqqrev.acidify.logging.shortenPackageName
 import org.ntqqrev.yogurt.YogurtApp
 import org.ntqqrev.yogurt.YogurtApp.t
 
@@ -14,7 +13,7 @@ const val internalLogTag = "Core"
 
 private fun Logger.toAcidifyLogHandler(): LogHandler =
     LogHandler { level, tag, message, throwable ->
-        val trueMessage = "${shortenPackageName(tag)}|$message"
+        val trueMessage = "$tag|$message"
         when (level) {
             LogLevel.VERBOSE -> trace(trueMessage)
             LogLevel.DEBUG -> debug(trueMessage)
@@ -78,3 +77,6 @@ class YogurtConsoleAppender : AppenderBase<ILoggingEvent>() {
 actual val YogurtApp.logHandler: LogHandler by lazy {
     KtorSimpleLogger(internalLogTag).toAcidifyLogHandler()
 }
+
+actual fun YogurtApp.createKtorLogger(name: String): Logger =
+    KtorSimpleLogger(name)

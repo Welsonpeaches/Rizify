@@ -9,9 +9,11 @@ import org.ntqqrev.acidify.common.*
 import org.ntqqrev.acidify.common.android.*
 import org.ntqqrev.acidify.exception.UnstableNetworkException
 import org.ntqqrev.acidify.exception.WtLoginException
+import org.ntqqrev.acidify.logging.LogLevel
 import org.ntqqrev.ktfs.withFs
 import org.ntqqrev.yogurt.YogurtApp.config
 import org.ntqqrev.yogurt.YogurtApp.t
+import org.ntqqrev.yogurt.util.formatColoredLog
 import org.ntqqrev.yogurt.util.logHandler
 
 fun Application.initializePC(): Bot = withFs {
@@ -47,8 +49,30 @@ fun Application.initializePC(): Bot = withFs {
         qua = qua,
     )
 
-    t.println("使用协议 ${appInfo.os} ${appInfo.currentVersion} (AppId: ${appInfo.subAppId})")
-    t.println("QUA: $qua")
+    t.println(
+        formatColoredLog(
+            LogLevel.INFO,
+            "Rizify.Protocol",
+            "使用协议 ${appInfo.os} ${appInfo.currentVersion} (AppId: ${appInfo.subAppId})",
+            null
+        )
+    )
+    t.println(
+        formatColoredLog(
+            LogLevel.INFO,
+            "Rizify.Protocol",
+            "QUA: $qua",
+            null
+        )
+    )
+    t.println(
+        formatColoredLog(
+            LogLevel.INFO,
+            "Rizify.PRiSM",
+            "碎片签发服务: ${config.protocol.signApiUrl}",
+            null
+        )
+    )
     val bot = Bot(
         appInfo = appInfo,
         sessionStore = sessionStore,
@@ -111,7 +135,14 @@ fun Application.initializeAndroid(): AndroidBot = withFs {
         else -> bundledAndroidAppInfo["${config.protocol.os}/${config.protocol.version}"]
             ?: throw IllegalStateException("未找到匹配的内置 AppInfo，请检查配置的 OS 和 Version 是否正确")
     }
-    t.println("使用协议 ${config.protocol.os} ${appInfo.ptVersion} (AppId: ${appInfo.subAppId})")
+    t.println(
+        formatColoredLog(
+            LogLevel.INFO,
+            "Rizify.Protocol",
+            "使用协议 ${config.protocol.os} ${appInfo.ptVersion} (AppId: ${appInfo.subAppId})",
+            null
+        )
+    )
     val androidBot = AndroidBot(
         appInfo = appInfo,
         sessionStore = sessionStore,

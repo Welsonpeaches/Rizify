@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import org.ntqqrev.acidify.AbstractBot
 import org.ntqqrev.acidify.event.QRCodeGeneratedEvent
+import org.ntqqrev.acidify.logging.LogLevel
 import org.ntqqrev.ktfs.withFs
 import org.ntqqrev.qrmatrix.ErrorCorrectionLevel
 import org.ntqqrev.qrmatrix.generateMatrix
@@ -42,17 +43,33 @@ fun generateTerminalQRCode(data: String) = buildString {
 fun Application.configureQRCodeDisplay() = launch {
     val bot = dependencies.resolve<AbstractBot>()
     bot.eventFlow.filterIsInstance<QRCodeGeneratedEvent>().collect {
-        t.println("请用手机 QQ 扫描二维码：")
+        t.println(
+            formatColoredLog(
+                LogLevel.INFO,
+                "Rizify.Auth",
+                "请使用移动端扫描下方通行二维码：",
+                null
+            )
+        )
         t.println(generateTerminalQRCode(it.url))
         t.println(
-            """
-                或使用以下 URL 生成二维码并扫描：
-                ${it.url}
-            """.trimIndent()
+            formatColoredLog(
+                LogLevel.INFO,
+                "Rizify.Auth",
+                "或使用以下 URL 生成二维码并扫描：${it.url}",
+                null
+            )
         )
         withFs {
             qrCodePath.writeBytes(it.png)
-            t.println("二维码文件已保存至 ${qrCodePath.absolute}")
+            t.println(
+                formatColoredLog(
+                    LogLevel.INFO,
+                    "Rizify.Auth",
+                    "二维码文件已保存至 ${qrCodePath.absolute}",
+                    null
+                )
+            )
         }
     }
 }

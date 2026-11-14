@@ -1,6 +1,7 @@
 package org.ntqqrev.yogurt
 
 import com.github.ajalt.mordant.rendering.TextColors
+import com.github.ajalt.mordant.rendering.TextStyles
 import com.github.ajalt.mordant.terminal.Terminal
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.*
@@ -34,8 +35,15 @@ object YogurtApp {
 
     fun createServer() = embeddedServer(
         factory = CIO,
-        port = config.milky.http.port,
-        host = config.milky.http.host
+        environment = applicationEnvironment {
+            log = createKtorLogger("io.ktor.server.Application")
+        },
+        configure = {
+            connector {
+                port = config.milky.http.port
+                host = config.milky.http.host
+            }
+        }
     ) {
         if (config.protocol.signApiUrl.isEmpty()) {
             t.println(
@@ -50,7 +58,8 @@ object YogurtApp {
         }
 
         t.println(
-            """
+            TextColors.brightWhite(
+                """
                 .---------------------------------------.
                 |        ____  _         __             |
                 |       / __ \(_)_______/ /_  __  __    |
@@ -61,14 +70,19 @@ object YogurtApp {
                 |      Based on Acidify + Yogurt        |
                 |      Milky protocol service           |
                 '---------------------------------------'
-                ${BuildKonfig.name} v${BuildKonfig.version}
+                """.trimIndent()
+            )
+        )
+        t.println(
+            """
+                ${TextStyles.bold(TextColors.brightCyan("${BuildKonfig.name} v${BuildKonfig.version}"))} ${TextColors.gray("· 7sRef Milky Server")}
                 
-                Commit Hash:    ${BuildKonfig.commitHash}
-                Core Version:   ${BuildKonfig.coreVersion}
-                Milky Version:  $milkyVersion ($milkyPackageVersion)
-                Build Time:     ${BuildKonfig.buildTime}
-                Listen Address: ${config.milky.http.host}:${config.milky.http.port}${config.milky.http.prefix}
-                Data Directory: ${withFs { Path(".").absolute }}
+                ${TextColors.gray("Commit Hash:   ")} ${BuildKonfig.commitHash}
+                ${TextColors.gray("Core Version:  ")} ${BuildKonfig.coreVersion}
+                ${TextColors.gray("Milky Version: ")} $milkyVersion ($milkyPackageVersion)
+                ${TextColors.gray("Build Time:    ")} ${BuildKonfig.buildTime}
+                ${TextColors.gray("Listen Address:")} ${config.milky.http.host}:${config.milky.http.port}${config.milky.http.prefix}
+                ${TextColors.gray("Data Directory:")} ${withFs { Path(".").absolute }}
             """.trimIndent()
         )
 
@@ -82,7 +96,7 @@ object YogurtApp {
                 TextColors.brightYellow(
                     """
                         警告：你可能正在将 Rizify 的 Milky 服务暴露在公网环境下，且未设置 accessToken。
-                        这可能导致你的 QQ 账号被他人恶意使用，造成损失。
+                        这可能导致你的流转者凭据被他人恶意使用，造成损失。
                         请在设置中配置 accessToken，或将 host 设置为 127.0.0.1 或其他内网 IP 地址。
                         如果你明确知道自己在做什么，可以在配置文件中将 skipOnLaunchListenAddressCheck 设置为 true 以跳过此检查。
                         程序将在 10 秒后继续运行...
