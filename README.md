@@ -1,40 +1,33 @@
 # Rizify
 
-> 白塔林立的白垩世界里，七扇门折射着七个世界。
+> 「7sRef」是一个白塔林立的白色世界。这里是所有色彩与人们的归宿之地。
 >
-> 流转者穿过门，携来记忆的「碎片」；Liz 将它们堆成塔。
+> 七扇门、七个世界、七种法则、七种色彩在此折射变形，最终融合为一。
 
-Rizify 是 7sRef 世界观中的协议端，与 Acidify 成对。Acid 在门的一侧赠予饰品，Liz 在另一侧守望碎片；Rizify 负责把流转者带来的碎片重新聚拢、记录，并让它们以可读取的形式留存。
-
-在工程上，Rizify 是一个面向 Linux 的 Milky 协议服务端，内置 Linux 客户端 `3.2.34-53644` 的协议信息。
+Rizify 是一个面向 Linux 的 Milky 协议服务端，基于 [Acidify](https://github.com/LagrangeDev/acidify) 与其 Yogurt 模块构建，内置 Linux 客户端 `3.2.34-53644` 的协议信息。
 
 协议主体复用上游 Kotlin Multiplatform 模块：
 
-- `acidify-core`：连接协议核心
+- `acidify-core`：协议核心实现
 - `acidify-milky`：Milky HTTP/WebSocket 适配层
 - `yogurt`：协议端、登录、二维码、配置与会话存储
 
 `rizify-cli` 是一个 TypeScript/Node.js 启动外壳，只负责读取 `rizify.toml`、展开环境变量、校验配置、生成 `config.json`、启动原生 `rizify.kexe` 和转发信号。Yogurt 本身不是 TypeScript 项目。
 
-## 门的设定
+## 7sRef 与命名设定
 
-7sRef 是白塔林立的白垩世界，七扇门、七个世界、七种法则、七种色彩在此折射、变形，最终融合为一。Liz 在失去记忆后醒来，只记得自己的名字，以及将流转者持有的记忆「碎片（Fragment）」堆成塔的职责。Acid 则随性地出现在这个世界，以珠宝设计师的身份一次次把新作饰品送给 Liz。
+项目命名与角色映射取自《maimai》的「7sRef」区域设定：
 
-Rizify 站在 Liz 这一侧，Acidify 站在 Acid 这一侧。二者不是两套互不相干的协议实现，而是同一扇门两侧的镜像：Acidify 负责酸侧的协议行为，Rizify 负责 Liz 侧的记录与守望。
+- **7sRef 与白塔**：白塔林立的白色世界，七扇门（7sGate）折射并融汇七个世界、七种法则与七种色彩。穿过门而来的人们被称为**流转者（流転者）**，手中持有记忆「碎片（Fragment）」。
+- **Riz（Liz / リズ）→ Rizify**：在 7sRef 失去记忆后苏醒的白色少女（早期设定译作 Liz，后续区域写作 Riz）。她只记得自己的名字与守护这个世界的职责——将流转者持有的记忆「碎片」堆叠成白塔，化作庞大的记忆档案库。
+- **Acid → Acidify**：随性出现在 7sRef 的黑衣少女，容貌与 Riz 相似而性格截然相反，自称开朗的珠宝设计师，常向 Riz 献上新作饰品，与 Riz 宛如「镜中倒影」。工程上，Rizify 正是基于上游 **Acidify** 衍生构建的镜像协议端。
+- **流转者 → 登录设备名**：登录设备名不再沿用上游的 `Lagrange-*`，新会话统一使用：
 
-工程中的身份命名沿用这套设定：
+  ```text
+  流转者-<SHA-256(guid) 的 64 位小写十六进制>
+  ```
 
-- **流转者（流転者）**：穿过门、携带记忆碎片的人。Rizify 使用 `流转者-<设备 GUID 的 SHA-256>` 作为登录设备名。
-- **碎片（Fragment）**：流转者持有的记忆单位。Rizify 不伪造碎片，只记录与转发协议交互。
-- **白塔**：Liz 将碎片堆叠成塔。Rizify 的日志与会话存储对应这座塔的索引，而不是新的记忆来源。
-
-登录设备名不再沿用上游的 `Lagrange-*`。新会话格式为：
-
-```text
-流转者-<SHA-256(guid) 的 64 位小写十六进制>
-```
-
-读取旧会话时，只有以 `Lagrange-` 开头的设备名会被迁移为上述格式；其他自定义名称保持不变。
+  读取旧会话时，仅将以 `Lagrange-` 开头的设备名迁移为上述格式；其他自定义设备名保持不变。
 
 设定参考：[Maimai Apocrypha：7sRef 区域](https://www.7sref.cc/areas/7sref.html)。
 
@@ -207,14 +200,6 @@ QUA: V1_LNX_NQ_3.2.34_53644_GW_B
 - `session-store.json`：登录会话
 - `qrcode.png`：二维码登录图片
 - `app-info.json`：仅 `version = "custom"` 时使用
-
-登录设备名不再使用 `Lagrange-*`。新会话按 7sRef 设定使用：
-
-```text
-流转者-<SHA-256(guid) 的 64 位小写十六进制>
-```
-
-读取旧会话时，只有以 `Lagrange-` 开头的设备名会被迁移为上述格式；其他自定义名称保持不变。
 
 ## 签名排查
 
