@@ -1,28 +1,48 @@
 # Rizify
 
-Rizify 是一个面向 Linux 的 Milky 协议服务端，内置 Linux QQ `3.2.34-53644` 客户端信息。
+> 白塔林立的白垩世界里，七扇门折射着七个世界。
+>
+> 流转者穿过门，携来记忆的「碎片」；Liz 将它们堆成塔。
+
+Rizify 是 7sRef 世界观中的协议端，与 Acidify 成对。Acid 在门的一侧赠予饰品，Liz 在另一侧守望碎片；Rizify 负责把流转者带来的碎片重新聚拢、记录，并让它们以可读取的形式留存。
+
+在工程上，Rizify 是一个面向 Linux 的 Milky 协议服务端，内置 Linux 客户端 `3.2.34-53644` 的协议信息。
 
 协议主体复用上游 Kotlin Multiplatform 模块：
 
-- `acidify-core`：NTQQ 协议核心
+- `acidify-core`：连接协议核心
 - `acidify-milky`：Milky HTTP/WebSocket 适配层
 - `yogurt`：协议端、登录、二维码、配置与会话存储
 
 `rizify-cli` 是一个 TypeScript/Node.js 启动外壳，只负责读取 `rizify.toml`、展开环境变量、校验配置、生成 `config.json`、启动原生 `rizify.kexe` 和转发信号。Yogurt 本身不是 TypeScript 项目。
 
-## 命名与设定
+## 门的设定
 
-Rizify 的命名来自《maimai》系列中 7sRef 区域的设定：Acidify 对应 Acid，Rizify 对应与其成对的 Liz；穿过七扇门、携带记忆「碎片（Fragment）」而流转的人则被称为「流转者（流転者）」。
+7sRef 是白塔林立的白垩世界，七扇门、七个世界、七种法则、七种色彩在此折射、变形，最终融合为一。Liz 在失去记忆后醒来，只记得自己的名字，以及将流转者持有的记忆「碎片（Fragment）」堆成塔的职责。Acid 则随性地出现在这个世界，以珠宝设计师的身份一次次把新作饰品送给 Liz。
 
-因此登录设备名使用 `流转者-<设备 GUID 的 SHA-256>`，不再沿用上游的 `Lagrange-*`。这里只借用 7sRef 的命名与意象，不改变 QQ 协议行为。
+Rizify 站在 Liz 这一侧，Acidify 站在 Acid 这一侧。二者不是两套互不相干的协议实现，而是同一扇门两侧的镜像：Acidify 负责酸侧的协议行为，Rizify 负责 Liz 侧的记录与守望。
+
+工程中的身份命名沿用这套设定：
+
+- **流转者（流転者）**：穿过门、携带记忆碎片的人。Rizify 使用 `流转者-<设备 GUID 的 SHA-256>` 作为登录设备名。
+- **碎片（Fragment）**：流转者持有的记忆单位。Rizify 不伪造碎片，只记录与转发协议交互。
+- **白塔**：Liz 将碎片堆叠成塔。Rizify 的日志与会话存储对应这座塔的索引，而不是新的记忆来源。
+
+登录设备名不再沿用上游的 `Lagrange-*`。新会话格式为：
+
+```text
+流转者-<SHA-256(guid) 的 64 位小写十六进制>
+```
+
+读取旧会话时，只有以 `Lagrange-` 开头的设备名会被迁移为上述格式；其他自定义名称保持不变。
 
 设定参考：[Maimai Apocrypha：7sRef 区域](https://www.7sref.cc/areas/7sref.html)。
 
 ## 边界
 
-- Rizify 不实现签名算法，不包含 `wrapper.node`，也不依赖 `wrapper.node`。
-- 签名统一调用外部 LagrangeSignServer V2：
+- 仓库不包含签名服务端实现，签名统一调用外部 LagrangeSignServer V2：
   `POST /api/sign/sec-sign`
+- Rizify 不实现签名算法，不包含 `wrapper.node`，也不依赖 `wrapper.node`。
 - 默认签名服务根地址为 `http://127.0.0.1:8080/`。
 - `signApiUrl` 必须是根地址。Yogurt 会自行追加 `/api/sign/sec-sign`，不要填写 `/api/` 或完整的 `/api/sign/sec-sign`。
 - 本项目不修改、不启动、不打包 Python LagrangeSignServer。
@@ -31,11 +51,11 @@ Rizify 的命名来自《maimai》系列中 7sRef 区域的设定：Acidify 对�
 
 | 系统 | 版本 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| Linux | `53644` | 是 | Linux QQ `3.2.34-53644`，内置 |
-| Linux | `46494` | 否 | Linux QQ `3.2.26-46494`，内置 |
-| Linux | `39038` | 否 | Linux QQ `3.2.19-39038`，内置 |
-| Mac | `52892` | 否 | Mac QQ `7.0.1-52892`，内置 |
-| Mac | `52194` | 否 | Mac QQ `7.0.0-52194`，内置 |
+| Linux | `53644` | 是 | Linux 客户端 `3.2.34-53644`，内置 |
+| Linux | `46494` | 否 | Linux 客户端 `3.2.26-46494`，内置 |
+| Linux | `39038` | 否 | Linux 客户端 `3.2.19-39038`，内置 |
+| macOS | `52892` | 否 | macOS 客户端 `7.0.1-52892`，内置 |
+| macOS | `52194` | 否 | macOS 客户端 `7.0.0-52194`，内置 |
 | 任意 PC | `custom` | 否 | 读取数据目录下的 `app-info.json` |
 
 Linux 默认 `AppInfo` 为 `AppInfo.Bundled.Linux_53644`，其 QUA 严格为：
@@ -92,7 +112,7 @@ node rizify-cli/dist/index.mjs --version
 
 ## 配置
 
-首次运行会在当前目录生成 `rizify.toml` 并退出。模板中的 `uin = 0` 不能启动，必须改成真实 QQ 号。Rizify 不支持 `uin = 0` 的二维码发现模式。
+首次运行会在当前目录生成 `rizify.toml` 并退出。模板中的 `uin = 0` 不能启动，必须改成真实账号。Rizify 不支持 `uin = 0` 的二维码发现模式。
 
 最小配置：
 
@@ -250,22 +270,21 @@ Rizify 以 GPL-3.0-only 发布，保留上游 `LICENSE`、源文件版权/许可
 
 - [Acidify](https://github.com/LagrangeDev/acidify)
 - [Yogurt releases](https://github.com/SaltifyDev/yogurt-releases)
-- [Milky](https://milky.ntqqrev.org/)
 - [Lagrange.Core](https://github.com/LagrangeDev/Lagrange.Core)
 
 ## 特别致谢
 
-- Acidify 提供项目基础架构、NTQQ 协议实现与 Milky 适配
+- Acidify 提供项目基础架构、连接协议实现与 Milky 适配
 - Yogurt 提供 PC/Android 协议端与登录流程
 - Lagrange.Core 提供基础架构和大量协议包定义
-- Konata.Core 提供最初的 PC NTQQ 协议实现
+- Konata.Core 提供最初的 PC 连接协议实现
 - lagrange-kotlin 提供 TEA 与登录认证实现
 - qrcode-kotlin 提供二维码矩阵生成
 - LagrangeCodec 提供多媒体编解码
 - [@Linwenxuan04](https://github.com/Linwenxuan04) 编写 crypto 和 math 部分
 - 以及所有沿途贡献者
 
-## Contributors
+## 贡献者
 
 ### Acidify
 
