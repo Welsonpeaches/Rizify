@@ -3,25 +3,25 @@
 > 「7sRef」是一个白塔林立的白色世界。这里是所有色彩与人们的归宿之地。
 >
 > 七扇门、七个世界、七种法则、七种色彩在此折射变形，最终融合为一。
+> 流转者穿过门而来，Riz 将他们手里的记忆「碎片」堆叠成塔。
 
-Rizify 是一个面向 Linux 的 Milky 协议服务端，基于 [Acidify](https://github.com/LagrangeDev/acidify) 与其 Yogurt 模块构建，内置 Linux 客户端 `3.2.34-53644` 的协议信息。
+在 7sRef 的白色世界里，**Acid（Acidify）** 与 **Riz（Rizify）** 宛如镜中倒影般彼此对应。**Rizify** 基于 [Acidify](https://github.com/LagrangeDev/acidify) 与其 Yogurt 模块构建，是一个面向 Linux 的 Milky 协议服务端，默认内置 Linux 客户端 `3.2.34-53644` 的协议档案，将穿过门而来的协议交互与消息碎片以 Milky 接口和白塔档案的形式留存。
 
-协议主体复用上游 Kotlin Multiplatform 模块：
+白塔由以下模块共同支起：
 
-- `acidify-core`：协议核心实现
-- `acidify-milky`：Milky HTTP/WebSocket 适配层
-- `yogurt`：协议端、登录、二维码、配置与会话存储
-
-`rizify-cli` 是一个 TypeScript/Node.js 启动外壳，只负责读取 `rizify.toml`、展开环境变量、校验配置、生成 `config.json`、启动原生 `rizify.kexe` 和转发信号。Yogurt 本身不是 TypeScript 项目。
+- `acidify-core`：镜中倒影的另一半，承载底层协议核心实现
+- `acidify-milky`：Milky HTTP / WebSocket 适配层，将碎片折射为标准事件与接口
+- `yogurt`：协议端核心，负责登录、二维码、配置迁移与白塔会话存储
+- `rizify-cli`：TypeScript / Node.js 启动外壳，负责读取 `rizify.toml`、展开环境变量、校验配置、生成 `config.json`、拉起原生 `rizify.kexe` 并转发进程信号（Yogurt 本身是 Kotlin Multiplatform 模块，并非 TypeScript 项目）
 
 ## 7sRef 与命名设定
 
-项目命名与角色映射取自《maimai》的「7sRef」区域设定：
+Rizify 的命名与身份体系源自《maimai》的「7sRef」区域设定：
 
-- **7sRef 与白塔**：白塔林立的白色世界，七扇门（7sGate）折射并融汇七个世界、七种法则与七种色彩。穿过门而来的人们被称为**流转者（流転者）**，手中持有记忆「碎片（Fragment）」。
-- **Riz（Liz / リズ）→ Rizify**：在 7sRef 失去记忆后苏醒的白色少女（早期设定译作 Liz，后续区域写作 Riz）。她只记得自己的名字与守护这个世界的职责——将流转者持有的记忆「碎片」堆叠成白塔，化作庞大的记忆档案库。
-- **Acid → Acidify**：随性出现在 7sRef 的黑衣少女，容貌与 Riz 相似而性格截然相反，自称开朗的珠宝设计师，常向 Riz 献上新作饰品，与 Riz 宛如「镜中倒影」。工程上，Rizify 正是基于上游 **Acidify** 衍生构建的镜像协议端。
-- **流转者 → 登录设备名**：登录设备名不再沿用上游的 `Lagrange-*`，新会话统一使用：
+- **7sRef 与白塔**：白塔林立的白色世界，所有色彩与人们的归宿之地；七扇门（7sGate）通向七个世界，将七种法则与色彩折射融汇为一。每一座白塔都是由碎片组合而成的庞大记忆档案库。
+- **Riz（Liz / リズ）→ Rizify**：在 7sRef 失去记忆后苏醒的白色少女（早期区域译作 Liz，后续区域写作 Riz）。她只记得自己的名字与守护这个世界的职责——伸手触碰流转者持有的记忆「碎片（Fragment）」，将它们堆叠成塔。
+- **Acid → Acidify**：随性现身于 7sRef 的黑衣少女，容貌与 Riz 相似而性格截然相反，自称开朗的珠宝设计师，常把新作饰品送给 Riz，与 Riz 宛如「镜中倒影」。工程上，Rizify 正是基于上游 **Acidify** 衍生构建的镜像协议端。
+- **流转者（流転者）→ 登录设备名**：穿过七扇门来到 7sRef、手中闪耀着记忆「碎片」的旅人。Rizify 不再沿用上游的 `Lagrange-*`，新会话统一使用：
 
   ```text
   流转者-<SHA-256(guid) 的 64 位小写十六进制>
@@ -31,25 +31,29 @@ Rizify 是一个面向 Linux 的 Milky 协议服务端，基于 [Acidify](https:
 
 设定参考：[Maimai Apocrypha：7sRef 区域](https://www.7sref.cc/areas/7sref.html)。
 
-## 边界
+## 守门裁定与边界
 
-- 仓库不包含签名服务端实现，签名统一调用外部 LagrangeSignServer V2：
+在 7sRef 中，穿过门扉之前须由守门人核验旅人所持的碎片；Rizify 同样严格遵守协议边界，自身不伪造或裁定签名：
+
+- 本仓库**不包含签名服务端**，不实现也不复制签名算法，不包含也不依赖 `wrapper.node`。
+- 所有需要签名的报文统一交给外部 **LagrangeSignServer V2** 裁定：
   `POST /api/sign/sec-sign`
-- Rizify 不实现签名算法，不包含 `wrapper.node`，也不依赖 `wrapper.node`。
 - 默认签名服务根地址为 `http://127.0.0.1:8080/`。
-- `signApiUrl` 必须是根地址。Yogurt 会自行追加 `/api/sign/sec-sign`，不要填写 `/api/` 或完整的 `/api/sign/sec-sign`。
-- 本项目不修改、不启动、不打包 Python LagrangeSignServer。
+- `signApiUrl` 必须填写根地址；Yogurt 会自行拼接 `/api/sign/sec-sign`，切勿写成 `/api/` 或完整路径。
+- 本项目不修改、不内置、不启动、不打包 Python LagrangeSignServer。
 
-## 支持的版本
+## 门后折射的世界（支持的版本）
+
+不同的门扉折射着不同版本的客户端法则，白塔默认以 Linux `53644` 作为主档案，同时保留历史与自定义折射路径：
 
 | 系统 | 版本 | 默认 | 说明 |
 | --- | --- | --- | --- |
-| Linux | `53644` | 是 | Linux 客户端 `3.2.34-53644`，内置 |
-| Linux | `46494` | 否 | Linux 客户端 `3.2.26-46494`，内置 |
-| Linux | `39038` | 否 | Linux 客户端 `3.2.19-39038`，内置 |
-| macOS | `52892` | 否 | macOS 客户端 `7.0.1-52892`，内置 |
-| macOS | `52194` | 否 | macOS 客户端 `7.0.0-52194`，内置 |
-| 任意 PC | `custom` | 否 | 读取数据目录下的 `app-info.json` |
+| Linux | `53644` | 是 | Linux 客户端 `3.2.34-53644`，默认内置 |
+| Linux | `46494` | 否 | Linux 客户端 `3.2.26-46494`，内置保留 |
+| Linux | `39038` | 否 | Linux 客户端 `3.2.19-39038`，内置保留 |
+| macOS | `52892` | 否 | macOS 客户端 `7.0.1-52892`，内置保留 |
+| macOS | `52194` | 否 | macOS 客户端 `7.0.0-52194`，内置保留 |
+| 任意 PC | `custom` | 否 | 显式读取数据目录下的 `app-info.json` |
 
 Linux 默认 `AppInfo` 为 `AppInfo.Bundled.Linux_53644`，其 QUA 严格为：
 
@@ -57,9 +61,9 @@ Linux 默认 `AppInfo` 为 `AppInfo.Bundled.Linux_53644`，其 QUA 严格为：
 V1_LNX_NQ_3.2.34_53644_GW_B
 ```
 
-`custom` 模式要求 `<data-dir>/app-info.json` 存在；不会退回内置版本。`fetched` 在 `rizify.toml` 中会被拒绝。原生 Yogurt 读取旧的 V3 `config.json` 时，只会把哨兵值 `fetched` 归一化为 `53644`，以兼容旧配置迁移。
+`custom` 模式要求 `<data-dir>/app-info.json` 存在，缺失时会直接报错而不会回退到内置版本。`rizify.toml` 拒绝 `fetched`；原生 Yogurt 读取旧版 V3 `config.json` 时，则只会将哨兵值 `fetched` 归一化为 `53644`，以便旧档案迁移。
 
-## 构建
+## 筑塔（构建）
 
 环境要求：
 
@@ -67,7 +71,7 @@ V1_LNX_NQ_3.2.34_53644_GW_B
 - Node.js `>= 20`
 - pnpm
 
-默认 Gradle target 是 `jvm + linuxX64`，因此在 Linux 上可以直接执行：
+默认 Gradle target 为 `jvm + linuxX64`，在 Linux 上可直接完成编译与测试：
 
 ```bash
 JAVA_HOME=/usr/lib/jvm/java-27-openjdk ./gradlew build --console=plain --no-daemon
@@ -87,7 +91,7 @@ GITHUB_ACTIONS_BUILD_TARGET=linuxX64 \
 yogurt/build/bin/linuxX64/releaseExecutable/rizify.kexe
 ```
 
-构建 TypeScript 启动器和原生包：
+构建 TypeScript 启动器并打包原生产物：
 
 ```bash
 pnpm install
@@ -101,11 +105,11 @@ node rizify-cli/dist/index.mjs --version
 # Rizify 0.1.0
 ```
 
-`GITHUB_ACTIONS_BUILD_TARGET` 可取 `all`、`jvm`、`mingwX64`、`macosArm64`、`linuxX64`、`linuxArm64`。不设置时只在 Linux 上构建 `jvm + linuxX64`。
+`GITHUB_ACTIONS_BUILD_TARGET` 支持 `all`、`jvm`、`mingwX64`、`macosArm64`、`linuxX64`、`linuxArm64`；未设置时在 Linux 上只构建 `jvm + linuxX64`。
 
-## 配置
+## 门前契约（配置 `rizify.toml`）
 
-首次运行会在当前目录生成 `rizify.toml` 并退出。模板中的 `uin = 0` 不能启动，必须改成真实账号。Rizify 不支持 `uin = 0` 的二维码发现模式。
+首次运行会在当前目录生成 `rizify.toml` 模板并退出。模板中的 `uin = 0` 无法穿过门扉，必须填写真实账号；Rizify 不支持 `uin = 0` 的二维码发现模式。
 
 最小配置：
 
@@ -122,13 +126,13 @@ host = "127.0.0.1"
 port = 3000
 ```
 
-设置 token：
+注入外部签名服务 token：
 
 ```bash
 export SIGN_TOKEN='你的 LagrangeSignServer token'
 ```
 
-也支持 `${SIGN_TOKEN}`。变量未设置或为空时，启动器会在启动原生进程前报错，不会把 token 打印到日志。
+支持 `$SIGN_TOKEN` 与 `${SIGN_TOKEN}`。变量未设置或为空时，启动器会在拉起原生进程前拦截报错，绝不把 token 写入日志。
 
 完整配置模板：
 
@@ -170,15 +174,15 @@ skipOnLaunchListenAddressCheck = false
 enableFaceDetailsApi = false
 ```
 
-启动器会校验未知字段、端口范围、协议版本、`signApiUrl`、`uin` 和 token 环境变量。Kotlin 实际读取的 `config.json` 会以 `0600` 权限原子写入数据目录，`configVersion = 3`。
+启动器会在入门前校验未知字段、端口范围、协议版本、`signApiUrl`、`uin` 与 token 环境变量；校验通过后，将原生进程读取的 `config.json`（`configVersion = 3`）以 `0600` 权限原子写入数据目录。
 
-## 启动
+## 启门与白塔档案（启动与运行目录）
 
 ```bash
 pnpm start
 ```
 
-或指定配置文件和数据目录：
+或显式指定契约文件与白塔档案目录：
 
 ```bash
 node rizify-cli/dist/index.mjs \
@@ -186,7 +190,7 @@ node rizify-cli/dist/index.mjs \
   --data-dir /path/to/data
 ```
 
-数据目录默认是 `rizify.toml` 所在目录，原生进程以该目录为 cwd。启动后应看到：
+数据目录默认为 `rizify.toml` 所在目录，原生进程会以该目录作为工作目录。顺利启门后，日志中应出现：
 
 ```text
 Rizify v0.1.0
@@ -194,62 +198,61 @@ Rizify v0.1.0
 QUA: V1_LNX_NQ_3.2.34_53644_GW_B
 ```
 
-数据目录中的主要文件：
+白塔档案目录中的主要文件：
 
 - `config.json`：启动器生成的 V3 配置
-- `session-store.json`：登录会话
+- `session-store.json`：流转者的登录会话档案（设备名记录于此）
 - `qrcode.png`：二维码登录图片
 - `app-info.json`：仅 `version = "custom"` 时使用
 
-## 签名排查
+## 杂讯消除与版本适配
 
-服务端日志中的协议行和 QUA 行应分别是：
+当碎片失真或门后的法则更新时，流转通道会出现杂讯。Rizify 的排查准则与面向 `53644` 的必要适配如下：
+
+### 签名 `400` 排查
+
+正常运行时，日志中的协议版本行与签名请求应严格符合：
 
 ```text
 使用协议 Linux 3.2.34-53644 (AppId: 537391664)
 QUA: V1_LNX_NQ_3.2.34_53644_GW_B
-```
-
-签名请求应为：
-
-```text
 POST /api/sign/sec-sign
 ```
 
-如果签名服务返回 `400`，先检查：
+如果外部签名服务返回 `400`，按顺序检查以下五项：
 
-1. `protocol.os = "Linux"`、`protocol.version = "53644"`。
+1. `protocol.os` 是否为 `"Linux"`、`protocol.version` 是否为 `"53644"`。
 2. 日志中的 QUA 是否严格等于 `V1_LNX_NQ_3.2.34_53644_GW_B`。
-3. `signApiUrl` 是否为 `http://127.0.0.1:8080/` 这样的根地址，没有 `/api/` 后缀。
-4. 数据目录中是否误放了旧 `app-info.json` 并仍在使用 `custom`。
-5. token 是否通过 `SIGN_TOKEN` 正确注入，但不要把 token 贴到日志或问题报告中。
+3. `signApiUrl` 是否为 `http://127.0.0.1:8080/` 这类根地址，未多写 `/api/` 后缀。
+4. 数据目录中是否误留了旧 `app-info.json` 并仍启用 `custom`。
+5. `SIGN_TOKEN` 是否正确注入（切勿把 token 贴入日志或公开报告）。
 
-不要通过修改 Python SignServer 来绕过 Rizify 的 AppInfo/QUA 问题。
+请勿通过修改 Python LagrangeSignServer 来绕过 Rizify 自身的 AppInfo / QUA 问题。
 
-## 53644 适配
+### 53644 二维码 TLV `D1` 适配
 
-与旧版 Linux 客户端相比，53644 的二维码 TLV `D1` 第 4 字段由旧的 `typeBuf = "3001"` 改为 `GenInfo`：
+相较于旧版 Linux 客户端，`53644` 将二维码登录 TLV `D1` 的第 4 字段由旧的 `typeBuf = "3001"` 变更为 `GenInfo`：
 
 - `GenInfo.field 3 = appInfo.appId`
 - `GenInfo.field 6 = 1`，使用 `@EncodeDefault` 保证 protobuf 不会省略
 
-触发条件是 `appInfo.appClientVersion >= 53644`。Linux `39038`、`46494` 继续使用旧 `typeBuf` 分支，避免破坏旧版本登录。这里只做登录包字段适配，不包含任何签名算法。
+该适配仅在 `appInfo.appClientVersion >= 53644` 时生效；Linux `39038` 与 `46494` 仍保留原有 `typeBuf` 分支，避免影响旧版本登录。此处仅调整登录包字段，不涉及任何签名算法。
 
-## 构建适配
+### 构建适配
 
-上游 Gradle 配置默认会尝试所有原生 target。Rizify 在 Linux 本地构建时默认只启用 `jvm + linuxX64`，并通过 `GITHUB_ACTIONS_BUILD_TARGET` 显式启用其他 target。`yogurt` 和 `acidify-core-runner` 中依赖特定 target 的依赖块与 Windows linker 配置已加 target 存在性保护，避免 reduced-target 的 KMP metadata 解析失败。这不改变协议实现。
+上游 Gradle 配置默认尝试启用全部原生 target；Rizify 在 Linux 本地默认仅启用 `jvm + linuxX64`，并通过 `GITHUB_ACTIONS_BUILD_TARGET` 按需开启其他平台。`yogurt` 与 `acidify-core-runner` 中针对特定平台的依赖块及 Windows linker 配置均已加入 target 存在性保护，避免裁剪 target 时 KMP metadata 解析失败。该改动不改变协议行为。
 
-当前仓库如果没有提交，`BuildKonfig.commitHash` 和 `coreVersion` 会回退显示 `unknown`；这是为了让空仓库仍可构建，不代表协议版本未知。
+在无 Git 提交信息的源码快照环境下，`BuildKonfig.commitHash` 与 `coreVersion` 会安全回退为 `unknown`。
 
-## 许可证与上游
+## 归宿、许可证与上游
 
-Rizify 基于 [Acidify](https://github.com/LagrangeDev/acidify) 和其 Yogurt 模块，基线 commit：
+正如七个世界最终在 7sRef 交汇，Rizify 也建立在上游开源项目的基石之上，基线来自 [Acidify](https://github.com/LagrangeDev/acidify)：
 
 ```text
 b8fc6b4fa9a1651d5687ad8bd02de2e3df64e00b
 ```
 
-Rizify 以 GPL-3.0-only 发布，保留上游 `LICENSE`、源文件版权/许可证头和 attribution。详见 [NOTICE](NOTICE)。
+Rizify 延续 `GPL-3.0-only` 许可证发布，完整保留上游 `LICENSE`、源文件版权/许可证头与归属说明，详见 [NOTICE](NOTICE)。
 
 上游相关项目：
 
