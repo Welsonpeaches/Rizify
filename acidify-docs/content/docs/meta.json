@@ -1,0 +1,10 @@
+{
+  "pages": [
+    "index",
+    "---使用 Yogurt---",
+    "...yogurt",
+    "---使用 acidify-core---",
+    "...core",
+    "[ExternalLink][API 参考](/kdoc)"
+  ]
+}

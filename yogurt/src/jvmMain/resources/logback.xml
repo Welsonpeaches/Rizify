@@ -1,0 +1,7 @@
+<configuration>
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+    <appender name="CONSOLE" class="org.ntqqrev.yogurt.util.YogurtConsoleAppender"/>
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

@@ -1,0 +1,12 @@
+packages:
+  - acidify-core-js
+  - acidify-docs
+  - rizify-cli
+  - yogurt-scripting
+  - yogurt-scripting/script-api
+  - yogurt-scripting/script-example
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
