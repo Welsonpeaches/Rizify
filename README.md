@@ -3,9 +3,9 @@
 > 「7sRef」是一个白塔林立的白色世界。这里是所有色彩与人们的归宿之地。
 >
 > 七扇门、七个世界、七种法则、七种色彩在此折射变形，最终融合为一。
-> 流转者穿过门而来，Riz 将他们手里的记忆「碎片」堆叠成塔。
+> 这是一座为原本没有权限进入 7sRef 的人敞开的通道——由 **PRiSM** 伪造通行的「碎片」，借由 **Riz** 留存流转者的记录。
 
-在 7sRef 的白色世界里，**Acid（Acidify）** 与 **Riz（Rizify）** 宛如镜中倒影般彼此对应。**Rizify** 基于 [Acidify](https://github.com/LagrangeDev/acidify) 与其 Yogurt 模块构建，是一个面向 Linux 的 Milky 协议服务端，默认内置 Linux 客户端 `3.2.34-53644` 的协议档案，将穿过门而来的协议交互与消息碎片以 Milky 接口和白塔档案的形式留存。
+在 7sRef 的白色世界里，没有相应碎片的人会被挡在七扇门外。**Rizify** 正是为本身没有权限进入 7sRef 的人制作的实现端：它基于与 **Riz** 互为「镜中倒影」的 [Acidify](https://github.com/LagrangeDev/acidify) 与 Yogurt 模块构建，默认内置 Linux 客户端 `3.2.34-53644` 的协议档案，由外部 **PRiSM** 负责伪造通行的「碎片」（数据包签名），使流转者得以穿过门扉、以 Milky 接口接入并把记录堆叠进白塔。
 
 白塔由以下模块共同支起：
 
@@ -19,9 +19,10 @@
 Rizify 的命名与身份体系源自《maimai》的「7sRef」区域设定：
 
 - **7sRef 与白塔**：白塔林立的白色世界，所有色彩与人们的归宿之地；七扇门（7sGate）通向七个世界，将七种法则与色彩折射融汇为一。每一座白塔都是由碎片组合而成的庞大记忆档案库。
-- **Riz（Liz / リズ）→ Rizify**：在 7sRef 失去记忆后苏醒的白色少女（早期区域译作 Liz，后续区域写作 Riz）。她只记得自己的名字与守护这个世界的职责——伸手触碰流转者持有的记忆「碎片（Fragment）」，将它们堆叠成塔。
+- **Riz（Liz / リズ）→ Rizify**：在 7sRef 失去记忆后苏醒的白色少女（早期区域译作 Liz，后续区域写作 Riz），职责是将流转者持有的记忆「碎片（Fragment）」堆叠成塔。Rizify 即以此为名，作为帮助无权限者穿过门扉、并留存交互记录的协议端。
 - **Acid → Acidify**：随性现身于 7sRef 的黑衣少女，容貌与 Riz 相似而性格截然相反，自称开朗的珠宝设计师，常把新作饰品送给 Riz，与 Riz 宛如「镜中倒影」。工程上，Rizify 正是基于上游 **Acidify** 衍生构建的镜像协议端。
-- **流转者（流転者）→ 登录设备名**：穿过七扇门来到 7sRef、手中闪耀着记忆「碎片」的旅人。Rizify 不再沿用上游的 `Lagrange-*`，新会话统一使用：
+- **PRiSM → 外部碎片伪造（签名服务）**：七扇门仅凭真正的碎片放行。为了让原本没有权限进入 7sRef 的人也能跨越门扉，必须由外部的 **PRiSM**（`LagrangeSignServer V2`）来**伪造通行的「碎片」（数据包签名）**；Rizify 本身只作为实现端向外请求伪造碎片，不在内部复制或实现伪造算法。
+- **流转者（流転者）→ 登录设备名**：持着 PRiSM 伪造的碎片穿过七扇门、进入 7sRef 的旅人。Rizify 不再沿用上游的 `Lagrange-*`，新会话统一使用：
 
   ```text
   流转者-<SHA-256(guid) 的 64 位小写十六进制>
@@ -31,12 +32,12 @@ Rizify 的命名与身份体系源自《maimai》的「7sRef」区域设定：
 
 设定参考：[Maimai Apocrypha：7sRef 区域](https://www.7sref.cc/areas/7sref.html)。
 
-## 守门裁定与边界
+## PRiSM 与碎片边界（外部签名约定）
 
-在 7sRef 中，穿过门扉之前须由守门人核验旅人所持的碎片；Rizify 同样严格遵守协议边界，自身不伪造或裁定签名：
+通行的碎片由外部 **PRiSM** 伪造，Rizify 仅负责协议交互本身：
 
 - 本仓库**不包含签名服务端**，不实现也不复制签名算法，不包含也不依赖 `wrapper.node`。
-- 所有需要签名的报文统一交给外部 **LagrangeSignServer V2** 裁定：
+- 所有需要碎片的报文统一交由外部 **PRiSM（LagrangeSignServer V2）** 伪造并返回签名：
   `POST /api/sign/sec-sign`
 - 默认签名服务根地址为 `http://127.0.0.1:8080/`。
 - `signApiUrl` 必须填写根地址；Yogurt 会自行拼接 `/api/sign/sec-sign`，切勿写成 `/api/` 或完整路径。
@@ -126,7 +127,7 @@ host = "127.0.0.1"
 port = 3000
 ```
 
-注入外部签名服务 token：
+注入向外部 PRiSM（`LagrangeSignServer V2`）请求伪造碎片时的凭证 token：
 
 ```bash
 export SIGN_TOKEN='你的 LagrangeSignServer token'
@@ -209,7 +210,7 @@ QUA: V1_LNX_NQ_3.2.34_53644_GW_B
 
 当碎片失真或门后的法则更新时，流转通道会出现杂讯。Rizify 的排查准则与面向 `53644` 的必要适配如下：
 
-### 签名 `400` 排查
+### PRiSM 拒绝伪造碎片（签名 `400` 排查）
 
 正常运行时，日志中的协议版本行与签名请求应严格符合：
 
@@ -219,7 +220,7 @@ QUA: V1_LNX_NQ_3.2.34_53644_GW_B
 POST /api/sign/sec-sign
 ```
 
-如果外部签名服务返回 `400`，按顺序检查以下五项：
+如果外部 PRiSM（`LagrangeSignServer V2`）返回 `400`，按顺序检查以下五项：
 
 1. `protocol.os` 是否为 `"Linux"`、`protocol.version` 是否为 `"53644"`。
 2. 日志中的 QUA 是否严格等于 `V1_LNX_NQ_3.2.34_53644_GW_B`。
@@ -236,7 +237,7 @@ POST /api/sign/sec-sign
 - `GenInfo.field 3 = appInfo.appId`
 - `GenInfo.field 6 = 1`，使用 `@EncodeDefault` 保证 protobuf 不会省略
 
-该适配仅在 `appInfo.appClientVersion >= 53644` 时生效；Linux `39038` 与 `46494` 仍保留原有 `typeBuf` 分支，避免影响旧版本登录。此处仅调整登录包字段，不涉及任何签名算法。
+该适配仅在 `appInfo.appClientVersion >= 53644` 时生效；Linux `39038` 与 `46494` 仍保留原有 `typeBuf` 分支，避免影响旧版本登录。此处仅调整登录包字段，碎片伪造仍全部交由外部 PRiSM，不包含任何签名算法。
 
 ### 构建适配
 
