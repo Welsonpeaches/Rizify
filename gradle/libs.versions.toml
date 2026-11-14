@@ -22,7 +22,7 @@ logback = "1.6.6"
 
 build-konfig = "0.22.0"
 maven-publish = "0.37.0"
-dokka = "2.2.0"
+dokka = "2.3.0"
 shadow = "9.6.1"
 
 [libraries]
