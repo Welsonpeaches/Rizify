@@ -121,10 +121,21 @@ config.json
 rizify.toml
 session-store.json
 session-store-*.json
+session.json
 qrcode.png
+app-info.json
 logs/
 yogurt*/scripts/
 .codex/
+
+### Python ###
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
 
 ### Node / pnpm ###
 node_modules/

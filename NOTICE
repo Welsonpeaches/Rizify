@@ -1,23 +1,23 @@
 Rizify
 ======
 
-Rizify is a Milky protocol service built on the Acidify project and its
-Yogurt protocol modules.
+Rizify is a pure Python Milky protocol service. Its protocol core is a
+Python rewrite based on the public behavior of the Acidify project. Rizify
+does not depend on Yogurt or include a JVM, Node.js, or native launcher.
 
-Upstream projects and attribution
----------------------------------
+Upstream attribution
+--------------------
 
 Acidify
   Repository: https://github.com/LagrangeDev/acidify
   Baseline commit: b8fc6b4fa9a1651d5687ad8bd02de2e3df64e00b
-  Modules reused by Rizify:
-    - acidify-core
-    - acidify-milky
-    - yogurt
+  Reference areas:
+    - protocol behavior and packet layouts in acidify-core
+    - Milky API field names and semantics from acidify-milky
 
-Yogurt is the upstream protocol service layered on Acidify. Rizify keeps the
-upstream source-file copyright and license headers and the upstream LICENSE
-file.
+The upstream source files, copyright notices, and GPL licensing remain the
+property of their respective authors. Rizify preserves the upstream LICENSE
+file and does not remove or replace upstream copyright headers.
 
 License
 -------
@@ -25,14 +25,10 @@ License
 Rizify is distributed under the GNU General Public License, version 3 only
 (GPL-3.0-only). See LICENSE for the complete license text.
 
-The original Acidify and Yogurt code remains subject to its upstream
-copyright and GPL-3.0 licensing. This NOTICE does not replace or modify the
-LICENSE file or any source-file copyright header.
-
 External signing boundary
 -------------------------
 
-Rizify does not implement, copy, bundle, or reverse engineer the QQ signing
+Rizify does not implement, copy, bundle, or reverse engineer the signing
 algorithm. It does not depend on wrapper.node. Signature operations are
 delegated to an external LagrangeSignServer V2 instance over HTTP:
 
