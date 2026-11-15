@@ -37,7 +37,7 @@ Rizify 的命名与身份体系源自《maimai》的「7sRef」区域设定：
 通行的碎片由外部 **PRiSM** 伪造，Rizify 仅负责协议交互本身：
 
 - 本仓库**不包含签名服务端**，不实现也不复制签名算法，不包含也不依赖 `wrapper.node`。
-- 所有需要碎片的报文统一交由外部 **PRiSM（LagrangeSignServer V2）** 伪造并返回签名：
+- 所有需要碎片的报文统一交由外部 **PRiSM** 伪造并返回签名：
   `POST /api/sign/sec-sign`
 - 默认签名服务根地址为 `http://127.0.0.1:8080/`。
 - `signApiUrl` 必须填写根地址；Yogurt 会自行拼接 `/api/sign/sec-sign`，切勿写成 `/api/` 或完整路径。
