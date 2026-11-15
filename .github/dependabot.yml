@@ -5,28 +5,12 @@
 
 version: 2
 updates:
-  - package-ecosystem: "gradle" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: "uv"
+    directory: "/"
     schedule:
       interval: "weekly"
-
-  - package-ecosystem: "npm"
-    directory: "/" # pnpm workspace root (updates root pnpm-lock.yaml)
-    schedule:
-      interval: "weekly"
-    groups:
-      next:
-        patterns:
-          - "next"
-          - "@next/*"
-      react:
-        patterns:
-          - "react"
-          - "react-dom"
-          - "@types/react"
-          - "@types/react-dom"
 
   - package-ecosystem: "github-actions"
-    directory: "/" # Scans .github/workflows
+    directory: "/"
     schedule:
       interval: "weekly"

@@ -1,0 +1,34 @@
+[project]
+name = "rizify"
+version = "0.2.0"
+description = "Rizify Milky protocol service"
+requires-python = ">=3.12"
+license = { text = "GPL-3.0-only" }
+authors = [{ name = "Welsonpeaches" }]
+dependencies = [
+    "acidify-core",
+    "aiohttp>=3.11.0",
+    "orjson>=3.10.0",
+    "pydantic>=2.10.0",
+    "pillow>=11.0.0",
+    "qrcode>=8.0",
+]
+
+[project.optional-dependencies]
+scripting = ["quickjs>=1.19.4"]
+
+[project.scripts]
+rizify = "rizify.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rizify"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/rizify", "pyproject.toml"]
+
+[tool.uv.sources]
+acidify-core = { workspace = true }
