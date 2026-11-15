@@ -21,7 +21,7 @@ Rizify 的命名与身份体系源自《maimai》的「7sRef」区域设定：
 - **7sRef 与白塔**：白塔林立的白色世界，所有色彩与人们的归宿之地；七扇门（7sGate）通向七个世界，将七种法则与色彩折射融汇为一。每一座白塔都是由碎片组合而成的庞大记忆档案库。
 - **Riz（Liz / リズ）→ Rizify**：在 7sRef 失去记忆后苏醒的白色少女（早期区域译作 Liz，后续区域写作 Riz），职责是将流转者持有的记忆「碎片（Fragment）」堆叠成塔。Rizify 即以此为名，作为帮助无权限者穿过门扉、并留存交互记录的协议端。
 - **Acid → Acidify**：随性现身于 7sRef 的黑衣少女，容貌与 Riz 相似而性格截然相反，自称开朗的珠宝设计师，常把新作饰品送给 Riz，与 Riz 宛如「镜中倒影」。工程上，Rizify 正是基于上游 **Acidify** 衍生构建的镜像协议端。
-- **PRiSM → 外部碎片伪造（签名服务）**：七扇门仅凭真正的碎片放行。为了让原本没有权限进入 7sRef 的人也能跨越门扉，必须由外部的 **PRiSM**（`LagrangeSignServer V2`）来**伪造通行的「碎片」（数据包签名）**；Rizify 本身只作为实现端向外请求伪造碎片，不在内部复制或实现伪造算法。
+- **PRiSM → 外部碎片伪造（签名服务）**：七扇门仅凭真正的碎片放行。为了让原本没有权限进入 7sRef 的人也能跨越门扉，必须由外部的 **PRiSM**来**伪造通行的「碎片」（数据包签名）**；Rizify 本身只作为实现端向外请求伪造碎片，不在内部复制或实现伪造算法。
 - **流转者（流転者）→ 登录设备名**：持着 PRiSM 伪造的碎片穿过七扇门、进入 7sRef 的旅人。Rizify 不再沿用上游的 `Lagrange-*`，新会话统一使用：
 
   ```text
@@ -127,7 +127,7 @@ host = "127.0.0.1"
 port = 3000
 ```
 
-注入向外部 PRiSM（`LagrangeSignServer V2`）请求伪造碎片时的凭证 token：
+注入向外部 PRiSM（``）请求伪造碎片时的凭证 token：
 
 ```bash
 export SIGN_TOKEN='你的 LagrangeSignServer token'
@@ -220,7 +220,7 @@ QUA: V1_LNX_NQ_3.2.34_53644_GW_B
 POST /api/sign/sec-sign
 ```
 
-如果外部 PRiSM（`LagrangeSignServer V2`）返回 `400`，按顺序检查以下五项：
+如果外部 PRiSM（``）返回 `400`，按顺序检查以下五项：
 
 1. `protocol.os` 是否为 `"Linux"`、`protocol.version` 是否为 `"53644"`。
 2. 日志中的 QUA 是否严格等于 `V1_LNX_NQ_3.2.34_53644_GW_B`。
